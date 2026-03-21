@@ -3,6 +3,7 @@ package space.ememememem.radbackend.security;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
+import space.ememememem.radbackend.config.JwtProperties;
 import space.ememememem.radbackend.entity.User;
 import space.ememememem.radbackend.repository.UserRepository;
 
@@ -11,13 +12,12 @@ import java.util.Date;
 
 @Component
 public class JwtUtil {
-
-    private final Key key =
-            Keys.hmacShaKeyFor("my-super-secret-key-my-super-secret-key".getBytes());
     private final UserRepository userRepository;
+    private final Key key;
 
-    public JwtUtil(UserRepository userRepository) {
+    public JwtUtil(UserRepository userRepository, JwtProperties jwtProperties) {
         this.userRepository = userRepository;
+        key = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes());
     }
 
     public String generateToken(String username) {
