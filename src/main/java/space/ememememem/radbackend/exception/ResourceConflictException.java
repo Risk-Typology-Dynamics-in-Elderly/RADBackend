@@ -1,7 +1,7 @@
 package space.ememememem.radbackend.exception;
 
-public class ResourceConflictException extends RuntimeException {
-    public ResourceConflictException(String message) {
-        super(message);
+public class ResourceConflictException extends BaseException {
+    public ResourceConflictException(ErrorCode errorCode) {
+        super(errorCode);
     }
 }

@@ -7,11 +7,12 @@ import space.ememememem.radbackend.dto.request.RefreshRequest;
 import space.ememememem.radbackend.dto.request.RegisterRequest;
 import space.ememememem.radbackend.entity.User;
 import space.ememememem.radbackend.exception.BadRequestException;
+import space.ememememem.radbackend.exception.ErrorCode;
+import space.ememememem.radbackend.exception.LoginException;
 import space.ememememem.radbackend.exception.ResourceConflictException;
 import space.ememememem.radbackend.repository.UserRepository;
 import space.ememememem.radbackend.security.JwtUtil;
 
-import javax.security.auth.login.LoginException;
 import java.util.Map;
 
 
@@ -32,10 +33,10 @@ public class AuthController {
     public Map<String, String> login(@RequestBody LoginRequest req) throws LoginException {
 
         User user = userRepo.findByUsername(req.getUsername())
-                .orElseThrow(() -> new BadRequestException("Invalid request value"));
+                .orElseThrow(() -> new BadRequestException(ErrorCode.BAD_REQUEST_VALUE));
 
         if(!passwordEncoder.matches(req.getPassword(), user.getPasswordHash()))
-            throw new LoginException("Invalid Password");
+            throw new LoginException(ErrorCode.PASSWORD_INVALID);
 
         return Map.of(
                 "accessToken", jwtUtil.generateToken(req.getUsername()),
@@ -47,9 +48,9 @@ public class AuthController {
     public Map<String, String> refresh(@RequestBody RefreshRequest req) throws LoginException {
         String refreshToken = req.getRefreshToken();
         User user = userRepo.findByRefreshToken(refreshToken)
-                .orElseThrow(() -> new LoginException("Invalid refresh token"));
+                .orElseThrow(() -> new LoginException(ErrorCode.REFRESH_TOKEN_INVALID));
 
-        if (!jwtUtil.validateToken(refreshToken)) throw new LoginException("Refresh token expired");
+        if (!jwtUtil.validateToken(refreshToken)) throw new LoginException(ErrorCode.REFRESH_TOKEN_INVALID);
 
         String newAccessToken = jwtUtil.generateToken(user.getUsername());
         String newRefreshToken = jwtUtil.generateRefreshToken(user.getUsername());
@@ -62,7 +63,7 @@ public class AuthController {
     @PostMapping("/register")
     public void register(@RequestBody RegisterRequest req) {
         if (userRepo.findByUsername(req.getUsername()).isPresent())
-            throw new ResourceConflictException("Username already exists");
+            throw new ResourceConflictException(ErrorCode.USERNAME_CONFLICT);
         User newUser = User.builder()
                 .username(req.getUsername())
                 .passwordHash(passwordEncoder.encode(req.getPassword()))

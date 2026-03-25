@@ -1,7 +1,7 @@
 package space.ememememem.radbackend.exception;
 
-public class BadRequestException extends RuntimeException {
-    public BadRequestException(String message) {
-        super(message);
+public class BadRequestException extends BaseException {
+    public BadRequestException(ErrorCode errorCode) {
+        super(errorCode);
     }
 }
