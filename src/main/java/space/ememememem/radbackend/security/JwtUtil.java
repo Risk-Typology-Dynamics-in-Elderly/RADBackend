@@ -9,6 +9,7 @@ import space.ememememem.radbackend.repository.UserRepository;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.Map;
 
 @Component
 public class JwtUtil {
@@ -20,21 +21,23 @@ public class JwtUtil {
         key = Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes());
     }
 
-    public String generateToken(String username) {
+    public String generateToken(String username, String openId) {
         long expiration = 1000 * 60 * 10;
 
         return Jwts.builder()
                 .setSubject(username)
+                .setClaims(Map.of("openId", openId))
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(key)
                 .compact();
     }
 
-    public String generateRefreshToken(String username) {
+    public String generateRefreshToken(String username, String openId) {
         long expiration = 1000L * 60 * 60 * 24 * 30;
         String newRefreshToken = Jwts.builder()
                                     .setSubject(username)
+                                    .setClaims(Map.of("openId", openId))
                                     .setIssuedAt(new Date())
                                     .setExpiration(new Date(System.currentTimeMillis() + expiration))
                                     .signWith(key)

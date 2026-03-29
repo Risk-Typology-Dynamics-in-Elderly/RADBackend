@@ -8,8 +8,9 @@ public enum ErrorCode {
 
     BAD_REQUEST_VALUE(4003, "Invalid request value"),
 
-    PASSWORD_INVALID(4011, "Invalid password"),
+    AUTH_CODE_INVALID(4011, "Invalid AuthCode"),
     REFRESH_TOKEN_INVALID(4012, "Invalid refresh token"),
+    RISK_CHECK_FAILED(4013, "User risk check by WeChat failed"),
 
     USERNAME_CONFLICT(4091, "Username already exists");
 
