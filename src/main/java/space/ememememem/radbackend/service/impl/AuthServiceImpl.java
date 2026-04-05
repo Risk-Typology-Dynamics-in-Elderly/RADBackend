@@ -65,8 +65,9 @@ public class AuthServiceImpl implements AuthService {
 
         user.setSessionKey(wechatAuthResponse.getSessionKey());
 
-        String newAccessToken = jwtUtil.generateToken(user.getUsername(), user.getOpenId());
-        String newRefreshToken = jwtUtil.generateRefreshToken(user.getUsername(), user.getOpenId());
+        String newAccessToken = jwtUtil.generateToken(user.getUsername(), user.getOpenId(), user.getUserRole());
+        String newRefreshToken = jwtUtil.generateRefreshToken(user.getUsername(), user.getOpenId(),
+                user.getUserRole());
 
         user.setRefreshToken(newRefreshToken);
         userRepository.save(user);
@@ -82,8 +83,8 @@ public class AuthServiceImpl implements AuthService {
 
         if (!jwtUtil.validateToken(refreshToken)) throw new LoginException(ErrorCode.REFRESH_TOKEN_INVALID);
 
-        String newAccessToken = jwtUtil.generateToken(user.getUsername(), user.getOpenId());
-        String newRefreshToken = jwtUtil.generateRefreshToken(user.getUsername(), user.getOpenId());
+        String newAccessToken = jwtUtil.generateToken(user.getUsername(), user.getOpenId(), user.getUserRole());
+        String newRefreshToken = jwtUtil.generateRefreshToken(user.getUsername(), user.getOpenId(), user.getUserRole());
 
         user.setRefreshToken(newRefreshToken);
         userRepository.save(user);
@@ -94,8 +95,6 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public UserInfoResponse userinfo(String authToken) {
         String token = authToken.substring(7);
-        String username = jwtUtil.extractUsername(token);
-        User user = userRepository.findByUsername(username).orElseThrow();
         String openId = jwtUtil.extractOpenId(token);
         User user = userRepository.findByUsername(openId).orElseThrow();
         return new UserInfoResponse(user.getUsername(), user.getId(), user.getUserRole());
