@@ -37,11 +37,11 @@ public class JwtFilter extends OncePerRequestFilter {
 
             if (jwtUtil.validateToken(token)) {
 
-                String username = jwtUtil.extractUsername(token);
+                String openId = jwtUtil.extractOpenId(token);
 
                 UsernamePasswordAuthenticationToken auth =
                         new UsernamePasswordAuthenticationToken(
-                                username,
+                                openId,
                                 null,
                                 Collections.emptyList());
 
