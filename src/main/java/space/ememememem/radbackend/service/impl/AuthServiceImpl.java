@@ -20,7 +20,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
-@Transactional(rollbackOn = Exception.class)
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
@@ -85,6 +84,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public AuthTokenResponse refresh(RefreshRequest req) {
         String refreshToken = req.getRefreshToken();
         User user = userRepository.findByRefreshToken(refreshToken)
