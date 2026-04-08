@@ -8,6 +8,5 @@ import space.ememememem.radbackend.enums.UserRole;
 @AllArgsConstructor
 public class UserInfoResponse {
     public String username;
-    public Long id;
     public UserRole userRole;
 }

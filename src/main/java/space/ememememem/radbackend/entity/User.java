@@ -2,7 +2,6 @@ package space.ememememem.radbackend.entity;
 
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,17 +15,13 @@ import space.ememememem.radbackend.enums.UserRole;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-
-    @Id
-    @GeneratedValue
-    private Long id;
-
     private String username;
 
     private String refreshToken;
 
     private UserRole userRole;
 
+    @Id
     private String openId;
 
     private String sessionKey;
