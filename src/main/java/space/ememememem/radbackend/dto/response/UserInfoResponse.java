@@ -9,4 +9,5 @@ import space.ememememem.radbackend.enums.UserRole;
 public class UserInfoResponse {
     public String username;
     public UserRole userRole;
+    public String avatarBase64;
 }

@@ -25,4 +25,6 @@ public class User {
     private String openId;
 
     private String sessionKey;
+
+    private String avatarBase64;
 }

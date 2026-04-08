@@ -106,6 +106,6 @@ public class AuthServiceImpl implements AuthService {
         String token = authToken.substring(7);
         String openId = jwtUtil.extractOpenId(token);
         User user = userRepository.findByOpenId(openId).orElseThrow();
-        return new UserInfoResponse(user.getUsername(), user.getUserRole());
+        return new UserInfoResponse(user.getUsername(), user.getUserRole(), user.getAvatarBase64());
     }
 }
