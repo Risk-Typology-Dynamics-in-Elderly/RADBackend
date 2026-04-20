@@ -35,4 +35,13 @@ public class UserInfoController {
 
         return ResponseEntity.ok(new AvatarResponse(avatarBase64));
     }
+
+    @PostMapping("/username/change")
+    public ResponseEntity<Void> changeUsername(
+            @RequestHeader("Authorization") String authToken,
+            @RequestBody ChangeUsernameRequest changeUsernameRequest
+    ) {
+        userInfoService.changeUsername(authToken, changeUsernameRequest);
+        return ResponseEntity.ok().build();
+    }
 }

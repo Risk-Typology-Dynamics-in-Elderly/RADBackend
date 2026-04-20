@@ -1,6 +1,7 @@
 package space.ememememem.radbackend.service.impl;
 
 import org.springframework.stereotype.Service;
+import space.ememememem.radbackend.dto.request.ChangeUsernameRequest;
 import space.ememememem.radbackend.dto.request.UpdateAvatarRequest;
 import space.ememememem.radbackend.entity.User;
 import space.ememememem.radbackend.exception.BadRequestException;
@@ -37,5 +38,16 @@ public class UserInfoServiceImpl implements UserInfoService {
     public String getAvatar(String authToken) {
         User user = userRepository.findByOpenId(jwtUtil.extractOpenId(authToken.substring(7))).orElseThrow();
         return user.getAvatarBase64();
+    }
+
+    @Override
+    public void changeUsername(String authToken, ChangeUsernameRequest changeUsernameRequest) {
+        User user = userRepository.findByOpenId(jwtUtil.extractOpenId(authToken.substring(7))).orElseThrow();
+        String newUsername = changeUsernameRequest.getNewUsername();
+        if (newUsername == null || newUsername.isEmpty()) {
+            throw new BadRequestException(ErrorCode.BAD_REQUEST_VALUE);
+        }
+        user.setUsername(newUsername);
+        userRepository.save(user);
     }
 }
