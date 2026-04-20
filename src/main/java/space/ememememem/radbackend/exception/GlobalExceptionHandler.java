@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ExceptionHandlerResponse> handleBadRequest(ResourceConflictException ex) {
+    public ResponseEntity<ExceptionHandlerResponse> handleBadRequest(BadRequestException ex) {
         ExceptionHandlerResponse response = new ExceptionHandlerResponse();
         response.setCode(ex.getErrorCode().getCode());
         response.setMessage(ex.getErrorCode().getMessage());
