@@ -11,7 +11,6 @@ import space.ememememem.radbackend.service.AuthService;
 
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/api/v1/auth")
 public class AuthController {
     private final AuthService authService;

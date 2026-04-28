@@ -2,6 +2,7 @@ package space.ememememem.radbackend.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import space.ememememem.radbackend.config.JwtProperties;
 import space.ememememem.radbackend.enums.UserRole;
@@ -9,6 +10,7 @@ import space.ememememem.radbackend.enums.UserRole;
 import java.security.Key;
 import java.util.Date;
 
+@Slf4j
 @Component
 public class JwtUtil {
     private final Key key;
@@ -18,7 +20,7 @@ public class JwtUtil {
     }
 
     public String generateToken(String username, String openId, UserRole role) {
-        long expiration = 1000 * 60 * 10;
+        long expiration = 1000L * 60 * 10;
 
         return Jwts.builder()
                 .setSubject(openId)
@@ -56,6 +58,7 @@ public class JwtUtil {
             getClaims(token);
             return true;
         } catch (JwtException e) {
+            log.warn("JWT validation failed: {}", e.getMessage());
             return false;
         }
     }

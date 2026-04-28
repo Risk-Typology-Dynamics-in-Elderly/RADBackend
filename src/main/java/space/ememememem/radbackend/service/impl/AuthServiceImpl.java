@@ -35,6 +35,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public AuthTokenResponse login(LoginRequest req) {
         String responseBody = restClient.get().uri(
                 uriBuilder -> uriBuilder
@@ -46,19 +47,22 @@ public class AuthServiceImpl implements AuthService {
                         .build()
         ).retrieve().body(String.class);
 
+        if (responseBody == null) {
+            throw new LoginException(ErrorCode.AUTH_CODE_INVALID);
+        }
+
         ObjectMapper objectMapper = new ObjectMapper();
         WechatAuthResponse wechatAuthResponse;
         try {
             wechatAuthResponse = objectMapper.readValue(responseBody, WechatAuthResponse.class);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Failed to parse WechatAuthResponse");
+            throw new LoginException(ErrorCode.AUTH_CODE_INVALID);
         }
 
-        assert wechatAuthResponse != null;
+        if (wechatAuthResponse == null) throw new LoginException(ErrorCode.AUTH_CODE_INVALID);
         if (wechatAuthResponse.getErrCode() == 40029) throw new LoginException(ErrorCode.AUTH_CODE_INVALID);
         else if (wechatAuthResponse.getErrCode() == 40226) throw new LoginException(ErrorCode.RISK_CHECK_FAILED);
-        else if (wechatAuthResponse.getErrCode() != 0) throw new RuntimeException(wechatAuthResponse.getErrMsg());
-
+        else if (wechatAuthResponse.getErrCode() != 0) throw new LoginException(ErrorCode.AUTH_CODE_INVALID);
 
         User user = userRepository.findByOpenId(wechatAuthResponse.getOpenId())
                 .orElse(null);
@@ -89,6 +93,10 @@ public class AuthServiceImpl implements AuthService {
         String refreshToken = req.getRefreshToken();
         User user = userRepository.findByRefreshToken(refreshToken)
                 .orElseThrow(() -> new LoginException(ErrorCode.REFRESH_TOKEN_INVALID));
+
+        // Immediately invalidate the old token to prevent reuse attacks
+        user.setRefreshToken(null);
+        userRepository.save(user);
 
         if (!jwtUtil.validateToken(refreshToken)) throw new LoginException(ErrorCode.REFRESH_TOKEN_INVALID);
 
